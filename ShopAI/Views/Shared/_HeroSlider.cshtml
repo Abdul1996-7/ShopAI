@@ -1,0 +1,72 @@
+@model HomeViewModel
+@{
+    var products = Model.FeaturedProducts.Take(3).ToList();
+    var titles = new[]
+    {
+        "SmartStore لأجهزة أكثر ذكاءً",
+        "عروض إلكترونيات بتجربة فاخرة",
+        "متاجر متعددة داخل واجهة واحدة"
+    };
+    var subtitles = new[]
+    {
+        "هواتف، لابتوبات، ألعاب، وسماعات مختارة بعناية مع تجربة عربية سلسة.",
+        "واجهات منتجات متحركة، بطاقات تفاعلية، وبحث حي لشراء أسرع.",
+        "ابدأ البيع، أدر المخزون، واعرض منتجاتك كعلامة إلكترونيات حديثة."
+    };
+    var icons = new[] { "sparkles", "zap", "store" };
+}
+
+<section class="relative overflow-hidden bg-slate-950 text-white">
+    <div class="absolute inset-0 opacity-50" style="background-image: radial-gradient(circle at 15% 15%, rgba(56,189,248,.45), transparent 26%), radial-gradient(circle at 80% 20%, rgba(37,99,235,.38), transparent 24%), linear-gradient(135deg, rgba(15,23,42,.9), rgba(30,41,59,.35));"></div>
+    <div class="swiper smartstore-hero-swiper relative min-h-[calc(100vh-7rem)]" data-swiper="hero">
+        <div class="swiper-wrapper">
+            @for (var index = 0; index < titles.Length; index++)
+            {
+                var product = products.ElementAtOrDefault(index) ?? products.FirstOrDefault();
+                var image = product?.PrimaryImageUrl ?? "/images/product-placeholder.svg";
+                <div class="swiper-slide">
+                    <div class="mx-auto grid min-h-[calc(100vh-7rem)] max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+                        <div class="hero-copy max-w-2xl">
+                            <p class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-black text-cyan-100 backdrop-blur">
+                                <i data-lucide="@icons[index]" class="h-4 w-4"></i>
+                                تجربة إلكترونيات ممتازة
+                            </p>
+                            <h1 class="mt-6 text-4xl font-black leading-tight tracking-normal sm:text-5xl lg:text-7xl">@titles[index]</h1>
+                            <p class="mt-5 max-w-xl text-base leading-8 text-slate-200 sm:text-lg">@subtitles[index]</p>
+                            <div class="mt-8 flex flex-wrap gap-3">
+                                <a href="#best-sellers" class="rounded-2xl bg-white px-6 py-4 text-sm font-black text-slate-950 transition hover:bg-cyan-100">تصفح المنتجات</a>
+                                <a asp-controller="Account" asp-action="Register" class="rounded-2xl border border-white/25 px-6 py-4 text-sm font-black text-white transition hover:border-white hover:bg-white/10">ابدأ البيع الآن</a>
+                            </div>
+                        </div>
+
+                        <div class="hero-device relative">
+                            <div class="absolute -right-10 top-10 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl"></div>
+                            <div class="absolute -left-10 bottom-10 h-44 w-44 rounded-full bg-indigo-500/25 blur-3xl"></div>
+                            <div class="relative mx-auto max-w-xl rounded-[2rem] border border-white/15 bg-white/10 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
+                                <div class="overflow-hidden rounded-[1.5rem] bg-slate-900">
+                                    <img src="@image" alt="SmartStore" class="aspect-[4/3] w-full object-cover" loading="lazy" />
+                                </div>
+                                <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                                    <div class="rounded-2xl bg-white/10 p-4">
+                                        <p class="text-2xl font-black">@Model.FeaturedProducts.Count</p>
+                                        <p class="text-xs text-slate-300">منتجات مميزة</p>
+                                    </div>
+                                    <div class="rounded-2xl bg-white/10 p-4">
+                                        <p class="text-2xl font-black">@Model.Categories.Count</p>
+                                        <p class="text-xs text-slate-300">أقسام</p>
+                                    </div>
+                                    <div class="rounded-2xl bg-white/10 p-4">
+                                        <p class="text-2xl font-black">RTL</p>
+                                        <p class="text-xs text-slate-300">واجهة عربية</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="swiper-pagination smartstore-hero-pagination"></div>
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-50 to-transparent"></div>
+    </div>
+</section>

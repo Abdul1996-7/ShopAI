@@ -1,0 +1,90 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "SmartStore";
+    var categoryIcons = new Dictionary<string, string>
+    {
+        ["الإلكترونيات"] = "cpu",
+        ["الهواتف"] = "smartphone",
+        ["اللابتوبات"] = "laptop",
+        ["الإكسسوارات"] = "headphones",
+        ["الألعاب"] = "gamepad-2"
+    };
+    var productSections = new[]
+    {
+        "best-sellers",
+        "new-arrivals",
+        "laptops",
+        "mobiles",
+        "gaming",
+        "accessories"
+    };
+}
+
+@await Html.PartialAsync("_HeroSlider", Model)
+
+<section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8" data-aos="fade-up">
+    <div class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div>
+            <p class="text-sm font-black text-brand-600">تسوق حسب القسم</p>
+            <h2 class="mt-2 text-3xl font-black tracking-normal text-slate-950">أقسام إلكترونيات مصممة للتصفح السريع</h2>
+        </div>
+        <a href="/search" class="inline-flex items-center gap-2 text-sm font-black text-brand-600 hover:text-brand-900">
+            كل الأقسام
+            <i data-lucide="arrow-left" class="h-4 w-4"></i>
+        </a>
+    </div>
+
+    <div class="flex gap-4 overflow-x-auto pb-3">
+        @foreach (var category in Model.Categories)
+        {
+            var icon = categoryIcons.GetValueOrDefault(category.Name, "badge");
+            <a href="/search?category=@category.Id" class="group min-w-36 rounded-3xl border border-slate-200 bg-white p-5 text-center shadow-sm transition hover:-translate-y-2 hover:border-cyan-300 hover:shadow-soft">
+                <span class="mx-auto grid h-20 w-20 place-items-center rounded-full bg-gradient-to-br from-brand-50 to-cyan-100 text-brand-700 transition group-hover:scale-110">
+                    <i data-lucide="@icon" class="h-8 w-8"></i>
+                </span>
+                <span class="mt-4 block text-sm font-black text-slate-950">@category.Name</span>
+                <span class="mt-1 block text-xs text-slate-500">منتجات مختارة</span>
+            </a>
+        }
+        <a href="/search?q=smart%20home" class="group min-w-36 rounded-3xl border border-dashed border-cyan-300 bg-cyan-50/60 p-5 text-center transition hover:-translate-y-2 hover:bg-white hover:shadow-soft">
+            <span class="mx-auto grid h-20 w-20 place-items-center rounded-full bg-white text-cyan-600">
+                <i data-lucide="router" class="h-8 w-8"></i>
+            </span>
+            <span class="mt-4 block text-sm font-black text-slate-950">منزل ذكي</span>
+            <span class="mt-1 block text-xs text-slate-500">جاهز للمستقبل</span>
+        </a>
+    </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8" data-aos="fade-up">
+    <div class="grid gap-4 md:grid-cols-3">
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+            <div class="grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-700">
+                <i data-lucide="shield-check" class="h-6 w-6"></i>
+            </div>
+            <h3 class="mt-5 text-lg font-black text-slate-950">متاجر موثقة</h3>
+            <p class="mt-2 text-sm leading-7 text-slate-500">أساس جاهز لإدارة متاجر متعددة ومنتجات منشورة بوضوح.</p>
+        </div>
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+            <div class="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-50 text-cyan-700">
+                <i data-lucide="sparkles" class="h-6 w-6"></i>
+            </div>
+            <h3 class="mt-5 text-lg font-black text-slate-950">واجهة ديناميكية</h3>
+            <p class="mt-2 text-sm leading-7 text-slate-500">سلايدر، حركات، ومعاينة سريعة بدون إحساس CRUD تقليدي.</p>
+        </div>
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+            <div class="grid h-12 w-12 place-items-center rounded-2xl bg-indigo-50 text-indigo-700">
+                <i data-lucide="zap" class="h-6 w-6"></i>
+            </div>
+            <h3 class="mt-5 text-lg font-black text-slate-950">تحديثات جزئية</h3>
+            <p class="mt-2 text-sm leading-7 text-slate-500">HTMX يحمّل أقسام المنتجات ونتائج البحث بسلاسة.</p>
+        </div>
+    </div>
+</section>
+
+@foreach (var sectionKey in productSections)
+{
+    <div hx-get="/partials/products/@(sectionKey)" hx-trigger="load" hx-swap="innerHTML settle:120ms">
+        @await Html.PartialAsync("_ProductCarouselSkeleton", sectionKey)
+    </div>
+}

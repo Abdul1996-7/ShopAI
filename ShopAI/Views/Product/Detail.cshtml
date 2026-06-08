@@ -1,0 +1,149 @@
+@model ProductDetailViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    var mainImage = Model.ImageUrls.FirstOrDefault() ?? "/images/product-placeholder.svg";
+    var productUrl = $"/product/{Model.Id}/{Model.Slug}";
+    var rawPrice = Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    var displayPrice = $"{Model.Price:N0} د.ع";
+    var relatedSection = new ProductCarouselSectionViewModel(
+        "related-products",
+        "منتجات مشابهة",
+        "اقتراحات من نفس القسم",
+        $"/search?q={Uri.EscapeDataString(Model.CategoryName)}",
+        Model.RelatedProducts);
+}
+
+<section class="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_420px] lg:px-8">
+    <div class="order-2 lg:order-1" data-aos="fade-up">
+        <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-soft">
+            <div id="product-gallery" data-lightgallery="product" class="relative bg-gradient-to-br from-slate-100 to-blue-50">
+                <a href="@mainImage" data-gallery-item>
+                    <img id="main-product-image" src="@mainImage" alt="@Model.Title" class="aspect-[4/3] w-full object-cover" />
+                </a>
+                <button type="button" class="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-2xl bg-white/95 px-4 py-3 text-sm font-black text-slate-950 shadow-sm backdrop-blur" data-open-gallery>
+                    <i data-lucide="zoom-in" class="h-4 w-4"></i>
+                    تكبير الصور
+                </button>
+                @foreach (var image in Model.ImageUrls.Skip(1))
+                {
+                    <a href="@image" data-gallery-item class="hidden"></a>
+                }
+            </div>
+
+            @if (Model.ImageUrls.Count > 1)
+            {
+                <div class="border-t border-slate-100 p-4">
+                    <div class="swiper product-thumbs-swiper" data-swiper="product-thumbs">
+                        <div class="swiper-wrapper">
+                            @foreach (var image in Model.ImageUrls)
+                            {
+                                <button type="button" class="swiper-slide h-24 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 transition hover:border-brand-500" data-product-thumb="@image" aria-label="عرض صورة المنتج">
+                                    <img src="@image" alt="@Model.Title" class="h-full w-full object-cover" loading="lazy" />
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft" x-data="{ tab: 'specs' }" data-aos="fade-up">
+            <div class="flex flex-wrap gap-2">
+                <button type="button" class="rounded-2xl px-5 py-3 text-sm font-black transition" x-bind:class="tab === 'specs' ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" x-on:click="tab = 'specs'">المواصفات</button>
+                <button type="button" class="rounded-2xl px-5 py-3 text-sm font-black transition" x-bind:class="tab === 'details' ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" x-on:click="tab = 'details'">الوصف</button>
+                <button type="button" class="rounded-2xl px-5 py-3 text-sm font-black transition" x-bind:class="tab === 'seller' ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" x-on:click="tab = 'seller'">البائع</button>
+            </div>
+
+            <div class="mt-6" x-show="tab === 'specs'" x-transition.opacity>
+                @if (Model.Specifications.Count == 0)
+                {
+                    <p class="text-slate-500">لم يتم إضافة مواصفات لهذا المنتج بعد.</p>
+                }
+                else
+                {
+                    <div class="overflow-hidden rounded-2xl border border-slate-200">
+                        <table class="w-full text-right text-sm">
+                            <tbody class="divide-y divide-slate-100">
+                                @foreach (var specification in Model.Specifications)
+                                {
+                                    <tr>
+                                        <th class="w-1/3 bg-slate-50 px-4 py-4 font-black text-slate-600">@specification.Key</th>
+                                        <td class="px-4 py-4 text-slate-800">@specification.Value</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+
+            <div class="mt-6 leading-8 text-slate-600" x-show="tab === 'details'" x-transition.opacity>
+                @Model.Description
+            </div>
+
+            <div class="mt-6 grid gap-4 sm:grid-cols-2" x-show="tab === 'seller'" x-transition.opacity>
+                <div class="rounded-3xl bg-slate-50 p-5">
+                    <p class="text-sm font-black text-slate-500">المتجر</p>
+                    <a href="/store/@Model.StoreSlug" class="mt-2 block text-xl font-black text-brand-700">@Model.StoreName</a>
+                </div>
+                <div class="rounded-3xl bg-slate-50 p-5">
+                    <p class="text-sm font-black text-slate-500">المشاهدات</p>
+                    <p class="mt-2 text-xl font-black text-slate-950">@Model.ViewCount مشاهدة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <aside class="order-1 lg:order-2 lg:sticky lg:top-36 lg:h-fit" data-aos="fade-left">
+        <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-soft">
+            <div class="bg-slate-950 p-6 text-white">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="rounded-full bg-cyan-400 px-3 py-1 text-xs font-black text-slate-950">@Model.Condition</span>
+                    <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-slate-200">@Model.ViewCount مشاهدة</span>
+                </div>
+                <h1 class="mt-5 text-3xl font-black leading-tight tracking-normal">@Model.Title</h1>
+                <p class="mt-3 text-sm font-bold text-slate-300">@Model.CategoryName لدى <a class="text-cyan-200 hover:text-white" href="/store/@Model.StoreSlug">@Model.StoreName</a></p>
+            </div>
+
+            <div class="p-6">
+                <p class="text-4xl font-black text-slate-950">@Model.Price.ToString("N0") <span class="text-base font-bold text-slate-500">د.ع</span></p>
+
+                <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+                    <div class="rounded-2xl bg-slate-50 p-4">
+                        <p class="font-black text-slate-950">المخزون</p>
+                        <p class="mt-1 text-slate-500">@Model.InventoryCount قطعة متوفرة</p>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 p-4">
+                        <p class="font-black text-slate-950">الحالة</p>
+                        <p class="mt-1 text-slate-500">@(Model.IsAvailable ? "متاح للطلب" : "غير متاح حالياً")</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 grid gap-3">
+                    <a class="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-600 px-6 py-4 text-sm font-black text-white shadow-lg shadow-blue-900/15 transition hover:bg-brand-700" href="/store/@Model.StoreSlug">
+                        <i data-lucide="message-circle" class="h-5 w-5"></i>
+                        تواصل مع البائع
+                    </a>
+                    <button type="button"
+                            class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-6 py-4 text-sm font-black text-slate-700 transition hover:border-brand-500 hover:text-brand-600"
+                            data-add-to-cart
+                            data-id="@Model.Id"
+                            data-title="@Model.Title"
+                            data-price="@rawPrice"
+                            data-display-price="@displayPrice"
+                            data-image="@mainImage"
+                            data-store="@Model.StoreName"
+                            data-url="@productUrl">
+                        <i data-lucide="shopping-bag" class="h-5 w-5"></i>
+                        إضافة إلى السلة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+
+@if (Model.RelatedProducts.Count > 0)
+{
+    @await Html.PartialAsync("_ProductCarousel", relatedSection)
+}

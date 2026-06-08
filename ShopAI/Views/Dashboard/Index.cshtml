@@ -1,0 +1,158 @@
+@model DashboardStatsViewModel
+@{
+    ViewData["Title"] = "لوحة التحكم";
+    ViewData["ActiveNav"] = "Dashboard";
+}
+
+<section class="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[260px_1fr] lg:px-8">
+    @await Html.PartialAsync("_DashboardNav")
+
+    <div class="space-y-6">
+        @if (TempData["StatusMessage"] is string message)
+        {
+            <div class="rounded-2xl border border-brand-500/30 bg-brand-50 px-5 py-4 text-sm font-bold text-brand-900">@message</div>
+        }
+
+        <div class="relative overflow-hidden rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft" data-aos="fade-up">
+            <div class="absolute inset-0 opacity-50" style="background-image: radial-gradient(circle at 20% 20%, rgba(56,189,248,.45), transparent 30%), radial-gradient(circle at 80% 20%, rgba(37,99,235,.45), transparent 28%);"></div>
+            <div class="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+                <div>
+                    <p class="text-sm font-black text-cyan-200">SmartStore Analytics</p>
+                    <h1 class="mt-2 text-4xl font-black tracking-normal">لوحة تحكم البائع</h1>
+                    <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-300">راقب أداء المنتجات، المخزون، والمشاهدات من واجهة SaaS حديثة.</p>
+                </div>
+                <a class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-100" asp-action="Create">
+                    <i data-lucide="circle-plus" class="h-4 w-4"></i>
+                    إضافة منتج
+                </a>
+            </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft" data-aos="fade-up">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-black text-slate-500">إجمالي المنتجات</p>
+                    <span class="grid h-11 w-11 place-items-center rounded-2xl bg-brand-50 text-brand-700"><i data-lucide="boxes" class="h-5 w-5"></i></span>
+                </div>
+                <p class="mt-4 text-4xl font-black text-slate-950" data-counter="@Model.TotalProducts">@Model.TotalProducts</p>
+            </div>
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft" data-aos="fade-up" data-aos-delay="70">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-black text-slate-500">إجمالي المشاهدات</p>
+                    <span class="grid h-11 w-11 place-items-center rounded-2xl bg-cyan-50 text-cyan-700"><i data-lucide="eye" class="h-5 w-5"></i></span>
+                </div>
+                <p class="mt-4 text-4xl font-black text-slate-950" data-counter="@Model.TotalViews">@Model.TotalViews</p>
+            </div>
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft" data-aos="fade-up" data-aos-delay="140">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-black text-slate-500">في المخزون</p>
+                    <span class="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-50 text-emerald-700"><i data-lucide="package-check" class="h-5 w-5"></i></span>
+                </div>
+                <p class="mt-4 text-4xl font-black text-slate-950" data-counter="@Model.InStockProducts">@Model.InStockProducts</p>
+            </div>
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft" data-aos="fade-up" data-aos-delay="210">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-black text-slate-500">نفد المخزون</p>
+                    <span class="grid h-11 w-11 place-items-center rounded-2xl bg-red-50 text-red-700"><i data-lucide="package-x" class="h-5 w-5"></i></span>
+                </div>
+                <p class="mt-4 text-4xl font-black text-slate-950" data-counter="@Model.OutOfStockProducts">@Model.OutOfStockProducts</p>
+            </div>
+        </div>
+
+        <div class="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft" data-aos="fade-up">
+                <div class="mb-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-black text-brand-600">تحليل سريع</p>
+                        <h2 class="mt-1 text-xl font-black text-slate-950">حالة المخزون</h2>
+                    </div>
+                    <i data-lucide="chart-pie" class="h-6 w-6 text-slate-400"></i>
+                </div>
+                <canvas id="inventory-chart" class="dashboard-canvas" data-in-stock="@Model.InStockProducts" data-out-stock="@Model.OutOfStockProducts" data-low-stock="@Model.LowInventoryProducts"></canvas>
+            </div>
+
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft" data-aos="fade-up">
+                <div class="mb-5">
+                    <p class="text-sm font-black text-brand-600">مؤشرات النشاط</p>
+                    <h2 class="mt-1 text-xl font-black text-slate-950">مشاهدات وطلبات</h2>
+                </div>
+                <canvas id="activity-chart" class="dashboard-canvas" data-views="@Model.TotalViews" data-orders="@Model.RecentOrders" data-products="@Model.TotalProducts"></canvas>
+            </div>
+        </div>
+
+        <div class="grid gap-6 xl:grid-cols-[1fr_360px]">
+            <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-soft" data-aos="fade-up">
+                <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+                    <h2 class="text-lg font-black text-slate-950">أحدث المنتجات</h2>
+                    <a class="text-sm font-black text-brand-600 hover:text-brand-900" asp-action="Products">إدارة الكل</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[760px] text-right text-sm">
+                        <thead class="bg-slate-50 text-xs font-black text-slate-500">
+                            <tr>
+                                <th class="px-5 py-3">المنتج</th>
+                                <th class="px-5 py-3">القسم</th>
+                                <th class="px-5 py-3">السعر</th>
+                                <th class="px-5 py-3">المخزون</th>
+                                <th class="px-5 py-3">المشاهدات</th>
+                                <th class="px-5 py-3">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach (var product in Model.RecentProducts)
+                            {
+                                <tr class="transition hover:bg-slate-50">
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <img src="@product.PrimaryImageUrl" alt="@product.Title" class="h-12 w-12 rounded-2xl object-cover" loading="lazy" />
+                                            <span class="font-black">@product.Title</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 text-slate-600">@product.CategoryName</td>
+                                    <td class="px-5 py-4 font-black">@product.Price.ToString("N0") د.ع</td>
+                                    <td class="px-5 py-4">@product.InventoryCount</td>
+                                    <td class="px-5 py-4">@product.ViewCount</td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex gap-2">
+                                            <a class="rounded-full border border-slate-200 px-4 py-2 font-black hover:border-brand-500 hover:text-brand-600" asp-action="Edit" asp-route-id="@product.Id">تعديل</a>
+                                            <form asp-action="Delete" asp-route-id="@product.Id" method="post">
+                                                <button class="rounded-full border border-slate-200 px-4 py-2 font-black text-slate-600 hover:border-red-300 hover:text-red-700" type="submit">إخفاء</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft" data-aos="fade-up">
+                <h2 class="text-lg font-black text-slate-950">نشاط حديث</h2>
+                <div class="mt-5 grid gap-4">
+                    <div class="flex gap-3">
+                        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-700"><i data-lucide="eye" class="h-5 w-5"></i></span>
+                        <div>
+                            <p class="text-sm font-black text-slate-950">تم تسجيل @Model.TotalViews مشاهدة</p>
+                            <p class="mt-1 text-xs text-slate-500">مؤشر قابل للتوسع لتحليلات Phase 3.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-cyan-50 text-cyan-700"><i data-lucide="package-search" class="h-5 w-5"></i></span>
+                        <div>
+                            <p class="text-sm font-black text-slate-950">@Model.LowInventoryProducts منتجات منخفضة المخزون</p>
+                            <p class="mt-1 text-xs text-slate-500">راجع المخزون قبل نفاد المنتجات النشطة.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-indigo-50 text-indigo-700"><i data-lucide="truck" class="h-5 w-5"></i></span>
+                        <div>
+                            <p class="text-sm font-black text-slate-950">@Model.RecentOrders طلبات خلال آخر 30 يوماً</p>
+                            <p class="mt-1 text-xs text-slate-500">جاهز لتفعيل منطق الطلبات في Phase 4.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

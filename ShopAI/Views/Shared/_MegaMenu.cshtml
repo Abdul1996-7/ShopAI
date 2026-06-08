@@ -1,0 +1,43 @@
+@{
+    var categories = new[]
+    {
+        new { Name = "لابتوبات", Description = "أجهزة عمل ودراسة وأداء احترافي", Icon = "laptop", Url = "/search?category=3", Accent = "from-blue-500 to-indigo-600" },
+        new { Name = "هواتف", Description = "أجهزة ذكية، شواحن، وحماية", Icon = "smartphone", Url = "/search?category=2", Accent = "from-cyan-500 to-blue-600" },
+        new { Name = "ألعاب", Description = "كونسولات، ملحقات، وتجهيزات لعب", Icon = "gamepad-2", Url = "/search?category=5", Accent = "from-indigo-500 to-violet-600" },
+        new { Name = "إكسسوارات", Description = "سماعات، لوحات مفاتيح، وقواعد شحن", Icon = "headphones", Url = "/search?category=4", Accent = "from-slate-700 to-blue-700" },
+        new { Name = "ساعات", Description = "واجهة مستقبلية للأجهزة القابلة للارتداء", Icon = "watch", Url = "/search?q=watch", Accent = "from-sky-500 to-cyan-500" },
+        new { Name = "منزل ذكي", Description = "أجهزة ذكية للمنزل والعمل", Icon = "router", Url = "/search?q=smart%20home", Accent = "from-blue-600 to-slate-800" },
+        new { Name = "صوتيات", Description = "سماعات ومكبرات صوت وتجربة نقية", Icon = "audio-lines", Url = "/search?q=audio", Accent = "from-cyan-600 to-indigo-600" }
+    };
+}
+
+<div class="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+    <div class="grid gap-3 sm:grid-cols-2">
+        @foreach (var category in categories)
+        {
+            <a href="@category.Url" class="group flex items-center gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:border-cyan-300 hover:shadow-soft">
+                <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br @category.Accent text-white shadow-lg shadow-blue-950/10">
+                    <i data-lucide="@category.Icon" class="h-5 w-5"></i>
+                </span>
+                <span>
+                    <span class="block text-sm font-black text-slate-950">@category.Name</span>
+                    <span class="mt-1 block text-xs leading-5 text-slate-500">@category.Description</span>
+                </span>
+                <i data-lucide="chevron-left" class="mr-auto h-4 w-4 text-slate-300 transition group-hover:-translate-x-1 group-hover:text-brand-600"></i>
+            </a>
+        }
+    </div>
+
+    <div class="relative overflow-hidden rounded-3xl bg-slate-950 p-6 text-white shadow-soft">
+        <div class="absolute inset-0 opacity-40" style="background-image: radial-gradient(circle at 20% 20%, rgba(56,189,248,.55), transparent 30%), radial-gradient(circle at 80% 80%, rgba(79,70,229,.55), transparent 28%);"></div>
+        <div class="relative">
+            <p class="w-fit rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-black text-cyan-100">SmartStore Mega Menu</p>
+            <h3 class="mt-5 text-3xl font-black leading-tight">أقسام مرنة جاهزة لتوسيع المتجر</h3>
+            <p class="mt-4 text-sm leading-7 text-slate-300">تم تصميم القائمة لتستوعب أقسام المستقبل مثل الساعات، المنزل الذكي، والصوتيات بدون تغيير بنية الصفحات.</p>
+            <a href="/search" class="mt-6 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-100">
+                تصفح كل المنتجات
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+            </a>
+        </div>
+    </div>
+</div>

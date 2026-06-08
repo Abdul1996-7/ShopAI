@@ -1,0 +1,105 @@
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  min-width: 320px;
+  font-family: Tahoma, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+.smartstore-hero-pagination {
+  bottom: 2rem !important;
+}
+
+.smartstore-hero-pagination .swiper-pagination-bullet {
+  width: 2rem;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  opacity: 1;
+}
+
+.smartstore-hero-pagination .swiper-pagination-bullet-active {
+  width: 3.5rem;
+  background: #38bdf8;
+}
+
+.smartstore-product-swiper {
+  overflow: visible;
+}
+
+.smartstore-product-swiper .swiper-slide {
+  height: auto;
+}
+
+.smartstore-card {
+  transform: translateZ(0);
+}
+
+.smartstore-card img {
+  backface-visibility: hidden;
+}
+
+.smart-search-shell input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.ts-wrapper.smartstore-select .ts-control {
+  min-height: 3.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  direction: rtl;
+  box-shadow: none;
+}
+
+.ts-wrapper.smartstore-select.focus .ts-control {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+}
+
+.ts-wrapper.smartstore-select .ts-dropdown {
+  border-radius: 1rem;
+  border-color: #e2e8f0;
+  direction: rtl;
+  text-align: right;
+  box-shadow: 0 22px 70px rgba(15, 23, 42, 0.12);
+}
+
+.quick-view-open {
+  overflow: hidden;
+}
+
+.lg-outer {
+  direction: ltr;
+}
+
+.dashboard-canvas {
+  min-height: 260px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.field-validation-error,
+.validation-summary-errors {
+  color: #b42318;
+}

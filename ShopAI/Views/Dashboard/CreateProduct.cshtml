@@ -1,0 +1,197 @@
+@model CreateProductViewModel
+@{
+    var isEdit = Model.Id.HasValue;
+    ViewData["Title"] = isEdit ? "تعديل المنتج" : "إضافة منتج";
+    ViewData["ActiveNav"] = isEdit ? "Products" : "Create";
+    var formAction = isEdit ? Url.Action("Edit", "Dashboard", new { id = Model.Id }) : Url.Action("Create", "Dashboard");
+    var specificationRows = Math.Max(1, Math.Max(Model.SpecificationKeys.Count, Model.SpecificationValues.Count));
+    var conditionItems = new[]
+    {
+        new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem("جديد", nameof(ProductCondition.New), Model.Condition == ProductCondition.New),
+        new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem("شبه جديد", nameof(ProductCondition.LikeNew), Model.Condition == ProductCondition.LikeNew),
+        new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem("جيد", nameof(ProductCondition.Good), Model.Condition == ProductCondition.Good),
+        new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem("مقبول", nameof(ProductCondition.Fair), Model.Condition == ProductCondition.Fair)
+    };
+}
+
+<section class="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[260px_1fr] lg:px-8">
+    @await Html.PartialAsync("_DashboardNav")
+
+    <div>
+        <div class="mb-6 overflow-hidden rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft" data-aos="fade-up">
+            <p class="text-sm font-black text-cyan-200">محرر المنتجات</p>
+            <h1 class="mt-2 text-4xl font-black tracking-normal">@(isEdit ? "تعديل المنتج" : "إضافة منتج جديد")</h1>
+            <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-300">قسّم بيانات المنتج إلى معلومات، تسعير، صور، ومخزون لتجربة إدخال واضحة وسريعة.</p>
+        </div>
+
+        <form action="@formAction" method="post" enctype="multipart/form-data" class="space-y-6">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm"></div>
+
+            @foreach (var imageUrl in Model.ExistingImageUrls)
+            {
+                <input type="hidden" name="ExistingImageUrls" value="@imageUrl" />
+            }
+
+            <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft" data-aos="fade-up">
+                <h2 class="text-xl font-black text-slate-950">المعلومات الأساسية</h2>
+                <div class="mt-5 grid gap-5 md:grid-cols-2">
+                    <div class="md:col-span-2">
+                        <label asp-for="Title" class="mb-2 block text-sm font-black">اسم المنتج</label>
+                        <input asp-for="Title" class="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10" placeholder="مثال: هاتف ذكي بسعة 256GB" />
+                        <span asp-validation-for="Title" class="mt-1 block text-sm"></span>
+                    </div>
+                    <div>
+                        <label asp-for="CategoryId" class="mb-2 block text-sm font-black">القسم</label>
+                        <select asp-for="CategoryId" asp-items="Model.Categories" data-tom-select class="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10">
+                            <option value="">اختر القسم</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="mt-1 block text-sm"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Condition" class="mb-2 block text-sm font-black">حالة المنتج</label>
+                        <select asp-for="Condition" asp-items="conditionItems" class="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10"></select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label asp-for="Description" class="mb-2 block text-sm font-black">الوصف</label>
+                        <textarea asp-for="Description" rows="6" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10" placeholder="اكتب وصفاً واضحاً عن المواصفات والحالة وما يشمله المنتج."></textarea>
+                        <span asp-validation-for="Description" class="mt-1 block text-sm"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft" data-aos="fade-up">
+                <h2 class="text-xl font-black text-slate-950">التسعير</h2>
+                <div class="mt-5 grid gap-5 md:grid-cols-2">
+                    <div>
+                        <label asp-for="Price" class="mb-2 block text-sm font-black">السعر</label>
+                        <input asp-for="Price" class="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10" placeholder="1250000" />
+                        <span asp-validation-for="Price" class="mt-1 block text-sm"></span>
+                    </div>
+                    <div>
+                        <label asp-for="MinimumNegotiablePrice" class="mb-2 block text-sm font-black">أقل سعر قابل للتفاوض</label>
+                        <input asp-for="MinimumNegotiablePrice" class="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10" placeholder="1150000" />
+                        <span asp-validation-for="MinimumNegotiablePrice" class="mt-1 block text-sm"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft" data-aos="fade-up">
+                <div class="flex items-center justify-between gap-4">
+                    <h2 class="text-xl font-black text-slate-950">المواصفات</h2>
+                    <button id="add-specification" type="button" class="rounded-full border border-slate-200 px-4 py-2 text-sm font-black hover:border-brand-500 hover:text-brand-600">إضافة سطر</button>
+                </div>
+                <div id="specification-list" class="mt-5 grid gap-3">
+                    @for (var index = 0; index < specificationRows; index++)
+                    {
+                        var key = index < Model.SpecificationKeys.Count ? Model.SpecificationKeys[index] : string.Empty;
+                        var value = index < Model.SpecificationValues.Count ? Model.SpecificationValues[index] : string.Empty;
+                        <div class="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+                            <input name="SpecificationKeys" value="@key" class="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500" placeholder="مثال: الذاكرة" />
+                            <input name="SpecificationValues" value="@value" class="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500" placeholder="16GB" />
+                            <button type="button" class="remove-specification rounded-2xl border border-slate-200 px-4 text-sm font-black text-slate-600 hover:border-red-300 hover:text-red-700">حذف</button>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft" data-aos="fade-up">
+                <h2 class="text-xl font-black text-slate-950">صور المنتج</h2>
+                @if (Model.ExistingImageUrls.Count > 0)
+                {
+                    <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        @foreach (var image in Model.ExistingImageUrls)
+                        {
+                            <img src="@image" alt="صورة حالية للمنتج" class="aspect-square rounded-2xl object-cover" />
+                        }
+                    </div>
+                }
+                <label for="image-files" id="drop-zone" class="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center transition hover:border-brand-500 hover:bg-brand-50">
+                    <span class="text-base font-black text-slate-950">اسحب الصور هنا أو اختر ملفات</span>
+                    <span class="mt-2 text-sm text-slate-500">سيتم تحسين الصور إلى WebP وإنشاء صور مصغرة بحجم 400px.</span>
+                    <input id="image-files" asp-for="ImageFiles" type="file" accept="image/*" multiple class="sr-only" />
+                </label>
+                <div id="image-preview" class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4"></div>
+            </section>
+
+            <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft" data-aos="fade-up">
+                <h2 class="text-xl font-black text-slate-950">المخزون والنشر</h2>
+                <div class="mt-5 grid gap-5 md:grid-cols-3">
+                    <div>
+                        <label asp-for="InventoryCount" class="mb-2 block text-sm font-black">عدد القطع المتوفرة</label>
+                        <input asp-for="InventoryCount" class="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10" />
+                        <span asp-validation-for="InventoryCount" class="mt-1 block text-sm"></span>
+                    </div>
+                    <label class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3">
+                        <input asp-for="IsPublished" class="h-5 w-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+                        <span class="text-sm font-black">منشور</span>
+                    </label>
+                    <label class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3">
+                        <input asp-for="IsAvailable" class="h-5 w-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+                        <span class="text-sm font-black">متاح للبيع</span>
+                    </label>
+                </div>
+            </section>
+
+            <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <a class="rounded-2xl border border-slate-200 px-6 py-3 text-center text-sm font-black text-slate-700 hover:border-brand-500 hover:text-brand-600" asp-action="Products">إلغاء</a>
+                <button class="rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white transition hover:bg-brand-900" type="submit">@(isEdit ? "حفظ التعديلات" : "إنشاء المنتج")</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        const specificationList = document.getElementById('specification-list');
+        document.getElementById('add-specification')?.addEventListener('click', () => {
+            const row = document.createElement('div');
+            row.className = 'grid gap-3 md:grid-cols-[1fr_1fr_auto]';
+            row.innerHTML = `
+                <input name="SpecificationKeys" class="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500" placeholder="مثال: السعة" />
+                <input name="SpecificationValues" class="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-brand-500" placeholder="512GB" />
+                <button type="button" class="remove-specification rounded-2xl border border-slate-200 px-4 text-sm font-black text-slate-600 hover:border-red-300 hover:text-red-700">حذف</button>
+            `;
+            specificationList.appendChild(row);
+        });
+
+        specificationList?.addEventListener('click', event => {
+            if (event.target.classList.contains('remove-specification') && specificationList.children.length > 1) {
+                event.target.closest('div')?.remove();
+            }
+        });
+
+        const imageInput = document.getElementById('image-files');
+        const imagePreview = document.getElementById('image-preview');
+        imageInput?.addEventListener('change', () => {
+            imagePreview.innerHTML = '';
+            [...imageInput.files].forEach(file => {
+                const reader = new FileReader();
+                reader.onload = event => {
+                    const image = document.createElement('img');
+                    image.src = event.target.result;
+                    image.alt = file.name;
+                    image.className = 'aspect-square rounded-2xl object-cover';
+                    imagePreview.appendChild(image);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        const dropZone = document.getElementById('drop-zone');
+        dropZone?.addEventListener('dragover', event => {
+            event.preventDefault();
+            dropZone.classList.add('border-brand-500', 'bg-brand-50');
+        });
+        dropZone?.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-brand-500', 'bg-brand-50');
+        });
+        dropZone?.addEventListener('drop', event => {
+            event.preventDefault();
+            dropZone.classList.remove('border-brand-500', 'bg-brand-50');
+            imageInput.files = event.dataTransfer.files;
+            imageInput.dispatchEvent(new Event('change'));
+        });
+    </script>
+}

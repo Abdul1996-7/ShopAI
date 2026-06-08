@@ -1,0 +1,264 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SmartStore</title>
+    <script>
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef6ff',
+                            100: '#dbeafe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            900: '#172554'
+                        },
+                        ink: '#0f172a',
+                        mist: '#f8fafc',
+                        electric: '#38bdf8'
+                    },
+                    boxShadow: {
+                        soft: '0 22px 70px rgba(15, 23, 42, 0.10)',
+                        glow: '0 22px 80px rgba(37, 99, 235, 0.22)'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/css/tom-select.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.9.0/css/lightgallery-bundle.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="min-h-screen overflow-x-hidden bg-slate-50 text-ink antialiased" x-data="{ mobileMenu: false, megaMenu: false }">
+    <header class="fixed inset-x-0 top-0 z-50 border-b border-white/60 bg-white/85 shadow-sm backdrop-blur-2xl">
+        <nav class="mx-auto flex min-h-20 w-full max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+            <a class="flex min-w-0 items-center gap-3" asp-controller="Home" asp-action="Index" aria-label="الصفحة الرئيسية">
+                <span class="grid h-12 w-12 shrink-0 place-items-center rounded-3xl bg-gradient-to-br from-brand-600 via-blue-500 to-cyan-400 text-sm font-black text-white shadow-glow">SS</span>
+                <span class="truncate text-lg font-black tracking-normal sm:text-2xl">SmartStore</span>
+            </a>
+
+            <button type="button" class="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:border-cyan-300 hover:text-brand-700 lg:inline-flex" x-on:mouseenter="megaMenu = true" x-on:click="megaMenu = !megaMenu">
+                <i data-lucide="layout-grid" class="h-5 w-5"></i>
+                الأقسام
+                <i data-lucide="chevron-down" class="h-4 w-4"></i>
+            </button>
+
+            <div class="hidden flex-1 lg:block">
+                @await Html.PartialAsync("_SearchBox")
+            </div>
+
+            <div class="mr-auto hidden items-center gap-2 md:flex">
+                <a class="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:border-cyan-300 hover:text-brand-700" href="#" aria-label="المفضلة">
+                    <i data-lucide="heart" class="h-5 w-5"></i>
+                </a>
+                <button type="button" class="relative grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:border-cyan-300 hover:text-brand-700" aria-label="السلة" data-cart-open>
+                    <i data-lucide="shopping-bag" class="h-5 w-5"></i>
+                    <span class="absolute -left-2 -top-2 hidden min-w-6 rounded-full bg-cyan-400 px-2 py-1 text-center text-xs font-black text-slate-950" data-cart-count>0</span>
+                </button>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a class="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-brand-700" asp-controller="Dashboard" asp-action="Index">
+                        <i data-lucide="gauge" class="h-4 w-4"></i>
+                        لوحة التحكم
+                    </a>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button class="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:border-red-300 hover:text-red-700" type="submit">تسجيل الخروج</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:border-cyan-300 hover:text-brand-700" asp-controller="Account" asp-action="Login">تسجيل الدخول</a>
+                    <a class="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-brand-700" asp-controller="Account" asp-action="Register">ابدأ البيع</a>
+                }
+            </div>
+
+            <button type="button" class="mr-auto grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white md:hidden" aria-label="فتح القائمة" x-on:click="mobileMenu = !mobileMenu">
+                <i data-lucide="menu" class="h-5 w-5"></i>
+            </button>
+        </nav>
+
+        <div class="hidden border-t border-slate-100 bg-white/75 lg:block">
+            <div class="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 text-sm font-black text-slate-600 sm:px-6 lg:px-8">
+                <a class="shrink-0 rounded-full bg-slate-950 px-4 py-2 text-white" href="/search">كل المنتجات</a>
+                <a class="shrink-0 rounded-full px-4 py-2 transition hover:bg-white hover:text-brand-700" href="/search?category=1">الإلكترونيات</a>
+                <a class="shrink-0 rounded-full px-4 py-2 transition hover:bg-white hover:text-brand-700" href="/search?category=2">الهواتف</a>
+                <a class="shrink-0 rounded-full px-4 py-2 transition hover:bg-white hover:text-brand-700" href="/search?category=3">اللابتوبات</a>
+                <a class="shrink-0 rounded-full px-4 py-2 transition hover:bg-white hover:text-brand-700" href="/search?category=5">الألعاب</a>
+                <a class="shrink-0 rounded-full px-4 py-2 transition hover:bg-white hover:text-brand-700" href="/search?category=4">الإكسسوارات</a>
+                <a class="shrink-0 rounded-full px-4 py-2 transition hover:bg-white hover:text-brand-700" href="/search?q=smart%20home">المنزل الذكي</a>
+            </div>
+        </div>
+
+        <div class="absolute inset-x-0 top-full hidden px-4 pb-4 lg:block" x-cloak x-show="megaMenu" x-transition.opacity.duration.180ms x-on:mouseenter="megaMenu = true" x-on:mouseleave="megaMenu = false">
+            <div class="mx-auto max-w-7xl rounded-[2rem] border border-slate-200 bg-white/95 p-5 shadow-soft backdrop-blur-2xl">
+                @await Html.PartialAsync("_MegaMenu")
+            </div>
+        </div>
+
+        <div class="border-t border-slate-100 bg-white px-4 py-4 shadow-soft md:hidden" x-cloak x-show="mobileMenu" x-transition.opacity.duration.180ms>
+            @await Html.PartialAsync("_SearchBox")
+            <div class="mt-4 grid gap-2">
+                <a class="rounded-2xl px-4 py-3 text-sm font-black hover:bg-slate-100" asp-controller="Home" asp-action="Index">الرئيسية</a>
+                <a class="rounded-2xl px-4 py-3 text-sm font-black hover:bg-slate-100" href="/search">تصفح المنتجات</a>
+                <button type="button" class="flex items-center justify-between rounded-2xl px-4 py-3 text-right text-sm font-black hover:bg-slate-100" data-cart-open>
+                    <span>السلة</span>
+                    <span class="hidden min-w-6 rounded-full bg-cyan-400 px-2 py-1 text-center text-xs font-black text-slate-950" data-cart-count>0</span>
+                </button>
+                <button type="button" class="rounded-2xl px-4 py-3 text-right text-sm font-black hover:bg-slate-100" x-on:click="megaMenu = !megaMenu">الأقسام</button>
+                <div x-cloak x-show="megaMenu" class="rounded-3xl border border-slate-200 bg-slate-50 p-3">
+                    @await Html.PartialAsync("_MegaMenu")
+                </div>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a class="rounded-2xl px-4 py-3 text-sm font-black hover:bg-slate-100" asp-controller="Dashboard" asp-action="Index">لوحة التحكم</a>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button class="w-full rounded-2xl px-4 py-3 text-right text-sm font-black hover:bg-slate-100" type="submit">تسجيل الخروج</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="rounded-2xl px-4 py-3 text-sm font-black hover:bg-slate-100" asp-controller="Account" asp-action="Login">تسجيل الدخول</a>
+                    <a class="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white" asp-controller="Account" asp-action="Register">ابدأ البيع</a>
+                }
+            </div>
+        </div>
+    </header>
+
+    <main role="main" class="min-h-screen overflow-x-hidden pt-28 lg:pt-36">
+        @RenderBody()
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-950 text-white">
+        <div class="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr_1fr] lg:px-8">
+            <div>
+                <div class="mb-4 flex items-center gap-3">
+                    <span class="grid h-11 w-11 place-items-center rounded-3xl bg-gradient-to-br from-brand-600 to-cyan-400 text-xs font-black text-white">SS</span>
+                    <span class="text-xl font-black">SmartStore</span>
+                </div>
+                <p class="max-w-md text-sm leading-7 text-slate-300">واجهة عربية حديثة لبيع الهواتف واللابتوبات والألعاب والإكسسوارات بتجربة بصرية تليق بعلامة إلكترونيات ممتازة.</p>
+            </div>
+            <div>
+                <h2 class="text-sm font-black text-white">الأقسام</h2>
+                <div class="mt-4 grid gap-3 text-sm text-slate-300">
+                    <a class="hover:text-cyan-300" href="/search?category=2">هواتف ذكية</a>
+                    <a class="hover:text-cyan-300" href="/search?category=3">لابتوبات</a>
+                    <a class="hover:text-cyan-300" href="/search?category=5">ألعاب</a>
+                    <a class="hover:text-cyan-300" href="/search?category=4">إكسسوارات</a>
+                </div>
+            </div>
+            <div>
+                <h2 class="text-sm font-black text-white">خدمة العملاء</h2>
+                <div class="mt-4 grid gap-3 text-sm text-slate-300">
+                    <a class="hover:text-cyan-300" href="#">الأسئلة الشائعة</a>
+                    <a class="hover:text-cyan-300" href="#">سياسة الإرجاع</a>
+                    <a class="hover:text-cyan-300" href="#">الشحن والتوصيل</a>
+                    <a class="hover:text-cyan-300" href="#">تواصل معنا</a>
+                </div>
+            </div>
+            <div>
+                <h2 class="text-sm font-black text-white">تابعنا</h2>
+                <div class="mt-4 flex gap-3">
+                    <a class="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 text-slate-300 transition hover:border-cyan-300 hover:text-cyan-300" href="#" aria-label="مجتمع SmartStore"><i data-lucide="messages-square" class="h-4 w-4"></i></a>
+                    <a class="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 text-slate-300 transition hover:border-cyan-300 hover:text-cyan-300" href="#" aria-label="معرض المنتجات"><i data-lucide="camera" class="h-4 w-4"></i></a>
+                    <a class="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 text-slate-300 transition hover:border-cyan-300 hover:text-cyan-300" href="#" aria-label="تواصل"><i data-lucide="send" class="h-4 w-4"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="cart-drawer" class="fixed inset-0 z-[90] hidden" data-cart-drawer>
+        <button type="button" class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" aria-label="إغلاق السلة" data-cart-close></button>
+        <aside class="absolute inset-y-0 left-0 flex w-full max-w-md flex-col bg-white shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-100 p-5">
+                <div>
+                    <p class="text-sm font-black text-brand-600">سلة SmartStore</p>
+                    <h2 class="mt-1 text-2xl font-black text-slate-950">المنتجات المختارة</h2>
+                </div>
+                <button type="button" class="grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 text-slate-500 hover:text-slate-950" data-cart-close aria-label="إغلاق السلة">
+                    <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-5">
+                <div data-cart-empty class="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                    <div class="mx-auto grid h-14 w-14 place-items-center rounded-3xl bg-white text-slate-500 shadow-sm">
+                        <i data-lucide="shopping-bag" class="h-6 w-6"></i>
+                    </div>
+                    <p class="mt-4 text-lg font-black text-slate-950">السلة فارغة</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-500">أضف منتجاً من صفحة المنتج أو بطاقات المنتجات.</p>
+                </div>
+                <div class="grid gap-4" data-cart-items></div>
+            </div>
+
+            <div class="border-t border-slate-100 p-5">
+                <div class="mb-4 flex items-center justify-between text-sm">
+                    <span class="font-black text-slate-500">الإجمالي</span>
+                    <span class="text-2xl font-black text-slate-950" data-cart-total>0 د.ع</span>
+                </div>
+                <div class="grid gap-3">
+                    <button type="button" class="rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white transition hover:bg-brand-700" data-cart-checkout>
+                        متابعة الطلب
+                    </button>
+                    <button type="button" class="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-black text-slate-600 transition hover:border-red-300 hover:text-red-700" data-cart-clear>
+                        تفريغ السلة
+                    </button>
+                    <p class="text-center text-xs leading-5 text-slate-400">هذه سلة مؤقتة محفوظة في المتصفح. ربط الطلبات الفعلية سيكون في مرحلة الطلبات.</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div id="quick-view-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm" data-quick-view-modal>
+        <div class="w-full max-w-4xl overflow-hidden rounded-[2rem] bg-white shadow-2xl">
+            <div class="grid md:grid-cols-[1fr_0.9fr]">
+                <div class="bg-slate-100">
+                    <img data-quick-view-image src="/images/product-placeholder.svg" alt="" class="aspect-[4/3] h-full w-full object-cover" />
+                </div>
+                <div class="relative p-6">
+                    <button type="button" class="absolute left-4 top-4 grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-500 hover:text-slate-950" data-quick-view-close aria-label="إغلاق">
+                        <i data-lucide="x" class="h-5 w-5"></i>
+                    </button>
+                    <p data-quick-view-category class="text-sm font-black text-brand-600"></p>
+                    <h2 data-quick-view-title class="mt-3 text-3xl font-black leading-tight text-slate-950"></h2>
+                    <p data-quick-view-store class="mt-2 text-sm font-bold text-slate-500"></p>
+                    <p data-quick-view-price class="mt-6 text-4xl font-black text-slate-950"></p>
+                    <div class="mt-5 flex gap-2">
+                        <span data-quick-view-condition class="rounded-full bg-brand-50 px-3 py-1 text-xs font-black text-brand-700"></span>
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">معاينة سريعة</span>
+                    </div>
+                    <a data-quick-view-link href="#" class="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-4 text-sm font-black text-white transition hover:bg-brand-700">
+                        عرض التفاصيل
+                        <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@1.17.0/dist/umd/lucide.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/js/tom-select.complete.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.9.0/lightgallery.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.9.0/plugins/zoom/lg-zoom.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.9.0/plugins/thumbnail/lg-thumbnail.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.12/dist/cdn.min.js" defer></script>
+    <script src="~/js/site.js" asp-append-version="true" defer></script>
+    <script src="~/js/smartstore.js" asp-append-version="true" defer></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

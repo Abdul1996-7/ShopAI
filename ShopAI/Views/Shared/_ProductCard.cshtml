@@ -1,0 +1,67 @@
+@model ProductCardViewModel
+@{
+    var productUrl = $"/product/{Model.Id}/{Model.Slug}";
+    var price = $"{Model.Price:N0} د.ع";
+    var rawPrice = Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture);
+}
+
+<article class="smartstore-card group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:border-cyan-300 hover:shadow-soft">
+    <div class="relative overflow-hidden bg-gradient-to-br from-slate-100 to-blue-50">
+        <a href="@productUrl" class="block">
+            <img src="@Model.PrimaryImageUrl" alt="@Model.Title" loading="lazy" class="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-110" />
+        </a>
+        <div class="absolute inset-x-3 top-3 flex items-start justify-between gap-3">
+            <span class="rounded-full bg-white/95 px-3 py-1 text-xs font-black text-brand-700 shadow-sm backdrop-blur">@Model.Condition</span>
+            <button type="button" class="grid h-10 w-10 place-items-center rounded-full bg-white/95 text-slate-700 shadow-sm backdrop-blur transition hover:text-red-500" aria-label="إضافة إلى المفضلة">
+                <i data-lucide="heart" class="h-4 w-4"></i>
+            </button>
+        </div>
+        <span class="absolute bottom-3 right-3 rounded-full bg-slate-950/85 px-3 py-1 text-xs font-black text-white backdrop-blur">@Model.CategoryName</span>
+        <button type="button"
+                class="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-2 text-xs font-black text-slate-950 opacity-0 shadow-sm backdrop-blur transition group-hover:opacity-100"
+                data-quick-view
+                data-title="@Model.Title"
+                data-price="@price"
+                data-image="@Model.PrimaryImageUrl"
+                data-category="@Model.CategoryName"
+                data-condition="@Model.Condition"
+                data-store="@Model.StoreName"
+                data-url="@productUrl">
+            <i data-lucide="eye" class="h-4 w-4"></i>
+            معاينة
+        </button>
+    </div>
+
+    <div class="flex flex-1 flex-col p-5">
+        <a href="@productUrl" class="line-clamp-2 min-h-12 text-base font-black leading-6 text-slate-950 transition hover:text-brand-600">@Model.Title</a>
+        <a href="/store/@Model.StoreSlug" class="mt-2 inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-brand-600">
+            <i data-lucide="store" class="h-4 w-4"></i>
+            @Model.StoreName
+        </a>
+
+        <div class="mt-auto flex items-end justify-between gap-3 pt-5">
+            <div>
+                <p class="text-xs font-black text-slate-400">السعر</p>
+                <p class="text-2xl font-black text-slate-950">@Model.Price.ToString("N0") <span class="text-sm font-bold text-slate-500">د.ع</span></p>
+            </div>
+            <div class="flex shrink-0 gap-2">
+                <button type="button"
+                        class="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:border-cyan-300 hover:text-brand-700"
+                        aria-label="إضافة @Model.Title إلى السلة"
+                        data-add-to-cart
+                        data-id="@Model.Id"
+                        data-title="@Model.Title"
+                        data-price="@rawPrice"
+                        data-display-price="@price"
+                        data-image="@Model.PrimaryImageUrl"
+                        data-store="@Model.StoreName"
+                        data-url="@productUrl">
+                    <i data-lucide="shopping-bag" class="h-5 w-5"></i>
+                </button>
+                <a href="@productUrl" class="grid h-12 w-12 place-items-center rounded-2xl bg-brand-600 text-white shadow-lg shadow-blue-900/15 transition hover:bg-brand-700" aria-label="عرض @Model.Title">
+                    <i data-lucide="arrow-left" class="h-5 w-5"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</article>

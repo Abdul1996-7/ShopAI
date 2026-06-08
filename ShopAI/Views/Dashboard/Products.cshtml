@@ -1,0 +1,94 @@
+@model DashboardProductsViewModel
+@{
+    ViewData["Title"] = "منتجاتي";
+    ViewData["ActiveNav"] = "Products";
+}
+
+<section class="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[260px_1fr] lg:px-8">
+    @await Html.PartialAsync("_DashboardNav")
+
+    <div class="space-y-6">
+        @if (TempData["StatusMessage"] is string message)
+        {
+            <div class="rounded-2xl border border-brand-500/30 bg-brand-50 px-5 py-4 text-sm font-bold text-brand-900">@message</div>
+        }
+
+        <div class="flex flex-col justify-between gap-4 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft sm:flex-row sm:items-end" data-aos="fade-up">
+            <div>
+                <p class="text-sm font-black text-brand-600">إدارة المخزون</p>
+                <h1 class="mt-2 text-4xl font-black tracking-normal text-slate-950">منتجاتي</h1>
+                <p class="mt-2 text-sm text-slate-500">@Model.Products.Count منتج داخل لوحة المتجر</p>
+            </div>
+            <a class="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white transition hover:bg-brand-700" asp-action="Create">
+                <i data-lucide="circle-plus" class="h-4 w-4"></i>
+                إضافة منتج
+            </a>
+        </div>
+
+        <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-soft" data-aos="fade-up">
+            <div class="border-b border-slate-100 px-5 py-4">
+                <div class="relative max-w-md">
+                    <i data-lucide="search" class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"></i>
+                    <input type="search" class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm font-bold outline-none focus:border-cyan-300 focus:bg-white focus:ring-4 focus:ring-cyan-300/15" placeholder="بحث داخل منتجاتك..." data-table-filter="#dashboard-products-table" />
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="dashboard-products-table" class="w-full min-w-[900px] text-right text-sm">
+                    <thead class="bg-slate-50 text-xs font-black text-slate-500">
+                        <tr>
+                            <th class="px-5 py-3">المنتج</th>
+                            <th class="px-5 py-3">القسم</th>
+                            <th class="px-5 py-3">السعر</th>
+                            <th class="px-5 py-3">المخزون</th>
+                            <th class="px-5 py-3">الحالة</th>
+                            <th class="px-5 py-3">المشاهدات</th>
+                            <th class="px-5 py-3">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach (var product in Model.Products)
+                        {
+                            var isLive = product.IsPublished && product.IsAvailable;
+                            <tr class="transition hover:bg-slate-50">
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <img src="@product.PrimaryImageUrl" alt="@product.Title" class="h-14 w-14 rounded-2xl object-cover" loading="lazy" />
+                                        <div>
+                                            <span class="block font-black">@product.Title</span>
+                                            <span class="mt-1 block text-xs text-slate-500">#@product.Id</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4 text-slate-600">@product.CategoryName</td>
+                                <td class="px-5 py-4 font-black">@product.Price.ToString("N0") د.ع</td>
+                                <td class="px-5 py-4">
+                                    <span class="rounded-full px-3 py-1 text-xs font-black @(product.InventoryCount <= 3 ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700")">@product.InventoryCount قطعة</span>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <span class="rounded-full px-3 py-1 text-xs font-black @(isLive ? "bg-brand-50 text-brand-700" : "bg-slate-100 text-slate-600")">
+                                        @(isLive ? "منشور" : "مخفي")
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4">@product.ViewCount</td>
+                                <td class="px-5 py-4">
+                                    <div class="flex gap-2">
+                                        <a class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 font-black hover:border-brand-500 hover:text-brand-600" asp-action="Edit" asp-route-id="@product.Id">
+                                            <i data-lucide="pencil" class="h-4 w-4"></i>
+                                            تعديل
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@product.Id" method="post">
+                                            <button class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 font-black text-slate-600 hover:border-red-300 hover:text-red-700" type="submit">
+                                                <i data-lucide="eye-off" class="h-4 w-4"></i>
+                                                إخفاء
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
